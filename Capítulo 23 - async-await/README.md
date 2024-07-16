@@ -1,42 +1,37 @@
-# Gabarito
+# Exercícios
+
+Nestes exercícios vamos rever como funcionam as novidades trazidas pelo ES8 (ES2017) com o async/await.
 
 ## Exercício 1 - Await a second!
-**R:** Simplesmente não funciona. O `await` precisa estar sempre envolta de uma função marcada com a palavra `async`.
+O que acontece quando tentamos utilizar o `await` em uma Promise fora de uma função marcada com `async`?
 
 ## Exercício 2 - Tire esse then da minha frente!
+Refatore a função a seguir para funcionar utilizando async/await.
+
 ``` javascript
-async function showGitHubUser(username) {
+function showGitHubUser(username) {
 	const url = `https://api.github.com/users/${username}`;
-	const response = await fetch(url);
-	const user = await response.json();
-	console.log(user);
+	fetch(url)
+		.then(response => response.json())
+		.then(user => {
+			console.log(user);
+		})
 }
 ```
 
 ## Exercício 3 - Na minha máquina funciona...
-**R:** É necessário encapsular o código dentro de um try/catch. Para o caso do exercício anterior, o código ficaria assim:
-
-``` javascript
-async function showGitHubUser(username) {
-	try {
-    const url = `https://api.github.com/users/${username}`;
-	  const response = await fetch(url);
-	  const user = await response.json();
-	  console.log(user);
-  } catch(err) {
-    // Se a promise for rejeitada por algum motivo, este fluxo será executado
-    console.log(err);
-  }
-}
-```
+Como fazemos para tratar erros quando estamos trabalhando com async/await? Refatore o código do exercício anterior para lidar com estes casos.
 
 ## Exercício 4 - Cuidado com a concorrência
+Refatore o código a seguir para deixar as requisições paralelas utilizando o `Promise.all`.
+
 ``` javascript
 async function showGitHubUserAndRepos(username) {
-  const [user, repos] = await Promise.all([
-    fetchFromGitHub(`/users/${username}`),
-    fetchFromGitHub(`/users/${username}/repos`)
-  ]);
+  const userPromise = fetchFromGitHub(`/users/${username}`);
+	const reposPromise = fetchFromGitHub(`/repos/${username}`);
+  
+	const user = await userPromise;
+	const repos = await reposPromise;
 	
 	console.log(user.name);
 	console.log(respos.length);
@@ -44,15 +39,15 @@ async function showGitHubUserAndRepos(username) {
 ```
 
 ## Exercício 5 - Nunca é tarde demais para mudar
+Refatore o código a seguir para que ao invés de usar callbacks, ele funcione com Promises e usando a sintaxe de async/await.
+
 ``` javascript
-function doSomethingPromisefy() {
-  return new Promise((resolve, reject) => {
-    resolve(console.log('i did something'));
-  })
+function doSomething(callback) {
+  console.log('i did something');
+  callback();
 }
 
-(async () => {
-  await doSomethingPromisefy();
+doSomething(function(){
   console.log('i did something AFTER!');
-})();
+})
 ```
